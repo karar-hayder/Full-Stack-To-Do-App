@@ -18,7 +18,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 from dotenv import load_dotenv
 
-load_dotenv(BASE_DIR.parent / ".env", override=True)
+load_dotenv(Path(__file__).resolve().parent / ".env", override=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 // Define types for props
 interface TodosListProps {
@@ -10,7 +11,7 @@ interface TodosListProps {
 
 // Define the Todo type (adjust based on your actual response structure)
 interface Todo {
-  id: string;
+  id: number;
   title: string;
   description: string;
   completed: boolean;
@@ -64,9 +65,29 @@ export default function TodosList({ token, api }: TodosListProps) {
     getTodos();
   }, [pageNumber]);
 
+  async function handleCompletion(
+    id: number,
+    complete: boolean
+  ): Promise<void> {
+    const response = await fetch(`${api}core/todos/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      body: JSON.stringify({ completed: complete ? false : true }),
+    });
+    if (!response.ok) {
+      console.log("Todo submit error: ", response.statusText);
+    } else {
+      await getTodos();
+    }
+  }
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-white mb-4">Todos List</h1>
+      <h1 className="text-2xl font-bold mb-4">Todos List</h1>
 
       {loading && <p className="text-gray-500">Loading...</p>}
       {error && <p className="text-red-600">{error}</p>}
@@ -95,7 +116,8 @@ export default function TodosList({ token, api }: TodosListProps) {
                 </div>
                 <div className="mt-2">
                   <span
-                    className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
+                    onClick={() => handleCompletion(todo.id, todo.completed)}
+                    className={`inline-block px-3 py-1 text-sm font-medium rounded-full cursor-pointer ${
                       todo.completed
                         ? "bg-green-200 text-green-800"
                         : "bg-yellow-200 text-yellow-800"

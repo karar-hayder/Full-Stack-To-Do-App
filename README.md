@@ -35,8 +35,6 @@ This is a full-stack To-Do application built with a modern tech stack. The appli
 
 ### Installation
 
------------- Forgot about the .env file -------------------
-
 1. Clone the repository:
 
     ```bash
@@ -58,21 +56,37 @@ This is a full-stack To-Do application built with a modern tech stack. The appli
     pip install -r requirements.txt
     ```
 
-4. Set up the PostgreSQL database and update the database settings in `backend/settings.py`.
+4. Create .env file in the backend directory and add the following environment variables:
 
-5. Run database migrations:
+    ```plaintext
+    SECRET_KEY=your_secret_key
+    DEBUG=True
+    DB_NAME=your_db_name
+    DB_USER=your_db_user
+    DB_PASSWORD=your_db_password
+    DB_HOST=your_db_host
+    DB_PORT=your_db_port
+    ```
+
+5. Create .env file in the frontend directory and add the following environment variables:
+
+    ```plaintext
+    DJANGO_PUBLIC_API_URL="http://localhost:8000/api/v1/"
+    ```
+
+6. Run database migrations:
 
     ```bash
     python manage.py migrate
     ```
 
-6. Start the backend server:
+7. Start the backend server:
 
     ```bash
     python manage.py runserver
     ```
 
-7. Start the frontend development server:
+8. Start the frontend development server:
 
     ```bash
     cd ../frontend

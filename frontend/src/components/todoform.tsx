@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
-interface TodoFromProps {
-  token: string;
-  api: string;
-}
+import { TodoFromProps } from "@/types/todo";
+
 export default function TodoForm({ token, api }: TodoFromProps) {
   async function handleSubmit(formData: FormData): Promise<void> {
     "use server";

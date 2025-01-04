@@ -1,21 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
-
-// Define types for props
-interface TodosListProps {
-  token: string;
-  api: string;
-}
-
-// Define the Todo type (adjust based on your actual response structure)
-interface Todo {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-}
+import { Todo, TodosListProps } from "@/types/todo";
+import TodoEdit from "@/components/todoedit";
 
 export default function TodosList({ token, api }: TodosListProps) {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -31,14 +18,17 @@ export default function TodosList({ token, api }: TodosListProps) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${api}core/todos/?page=${pageNumber}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `${api}core/todos/?page=${pageNumber}&filter_by=completed&filter_by=-created_at`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+          cache: "no-store",
+        }
+      );
 
       if (!response.ok) {
         if (response.status == 401) {
@@ -109,6 +99,7 @@ export default function TodosList({ token, api }: TodosListProps) {
                         ? "text-green-600 line-through"
                         : "text-gray-800"
                     }`}
+                    onClick={() => router.push(`/edit/${todo.id}`)}
                   >
                     {todo.title}
                   </h2>

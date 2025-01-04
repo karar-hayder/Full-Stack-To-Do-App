@@ -7,6 +7,8 @@ export default async function Home() {
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access-token")?.value || "";
   if (!accessToken) {
+    // Check for refreash token and refreash it if possiable || And make both tokens and antything coockie-able in one cookie
+    // Also logout functionality
     redirect("login/");
   }
   const apiUrl = process.env.DJANGO_PUBLIC_API_URL || "";

@@ -38,7 +38,7 @@ export default function TodoEdit({ token, api, todo }: TodoEditProps) {
     }
   }
   return (
-    <div className="flex flex-col justify-center items-center z-10 p-6 bg-white rounded-lg shadow-lg w-full max-w-md mx-auto">
+    <div className="flex flex-col justify-center items-center z-10 p-6 bg-white rounded-lg shadow-lg w-full max-w-md mx-auto mt-40">
       <h1 className="text-2xl font-semibold mb-6">Edit Todo</h1>
       <form onSubmit={updateTodo} className="w-full space-y-4">
         <div className="flex flex-col space-y-2">

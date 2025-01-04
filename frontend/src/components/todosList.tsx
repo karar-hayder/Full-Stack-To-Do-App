@@ -74,6 +74,21 @@ export default function TodosList({ token, api }: TodosListProps) {
       await getTodos();
     }
   }
+  async function HandleDeletion(id: number) {
+    const response = await fetch(`${api}core/todos/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      console.log("Todo deletion error: ", response.statusText);
+    } else {
+      await getTodos();
+    }
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -95,7 +110,7 @@ export default function TodosList({ token, api }: TodosListProps) {
               todos.map((todo: Todo) => (
                 <li
                   key={todo.id}
-                  className="flex flex-col p-5 border border-gray-200 rounded-lg shadow-lg bg-white hover:shadow-xl transition-shadow"
+                  className="flex flex-col p-8 border border-gray-200 rounded-lg shadow-lg bg-white hover:shadow-xl transition-shadow"
                 >
                   <div className="flex-grow">
                     <h2
@@ -123,6 +138,14 @@ export default function TodosList({ token, api }: TodosListProps) {
                     >
                       {todo.completed ? "Completed" : "Pending"}
                     </span>
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      onClick={() => HandleDeletion(todo.id)}
+                      className="px-4 py-1 text-sm font-medium rounded-full bg-red-200 text-red-800"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </li>
               ))

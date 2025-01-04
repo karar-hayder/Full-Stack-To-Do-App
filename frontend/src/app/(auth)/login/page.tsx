@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
+import { setToken } from "@/lib/auth";
 
 export default function Login() {
   async function handleLogin(formData: FormData): Promise<void> {
@@ -37,11 +37,7 @@ export default function Login() {
 
       const data = await response.json();
       console.log("Login successful");
-
-      (await cookies()).set("access-token", data.access, { httpOnly: true });
-      (await cookies()).set("refreash-token", data.refreash, {
-        httpOnly: true,
-      });
+      setToken(data.access, data.refresh);
     } catch (error) {
       console.error("An error occurred while logging in:", error);
     }

@@ -1,6 +1,6 @@
 import TodoEdit from "@/components/todoedit";
 import { Todo } from "@/types/todo";
-import { cookies } from "next/headers";
+import { getToken } from "@/lib/auth";
 import { redirect } from "next/navigation";
 export default async function Page({
   params,
@@ -8,19 +8,17 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  const cookiesStore = await cookies();
-  const accessToken = cookiesStore.get("access-token")?.value || "";
-  if (!accessToken) {
-    // Check for refreash token and refreash it if possiable || And make both tokens and antything coockie-able in one cookie
-    // Also logout functionality
-    redirect("login/");
+  const token = await getToken();
+
+  if (!token) {
+    redirect("/login/");
   }
   const apiUrl = process.env.DJANGO_PUBLIC_API_URL || "";
   const myTodo: Todo = await fetch(`${apiUrl}core/todos/${id}/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${token.accessToken}`,
     },
     credentials: "include",
   }).then((response) => {
@@ -32,5 +30,7 @@ export default async function Page({
     }
   });
 
-  return <TodoEdit token={accessToken} api={apiUrl} todo={myTodo}></TodoEdit>;
+  return (
+    <TodoEdit token={token.accessToken} api={apiUrl} todo={myTodo}></TodoEdit>
+  );
 }

@@ -18,17 +18,14 @@ export default function TodosList({ token, api }: TodosListProps) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `${api}core/todos/?page=${pageNumber}&filter_by=completed&filter_by=-created_at`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-          cache: "no-store",
-        }
-      );
+      const response = await fetch(`/api/todo/?page=${pageNumber}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        cache: "no-store",
+      });
 
       if (!response.ok) {
         if (response.status == 401) {
@@ -57,31 +54,37 @@ export default function TodosList({ token, api }: TodosListProps) {
 
   async function handleCompletion(
     id: number,
+    title: string,
+    description: string,
     complete: boolean
   ): Promise<void> {
-    const response = await fetch(`${api}core/todos/${id}`, {
+    const response = await fetch("/api/todo/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
-      credentials: "include",
-      body: JSON.stringify({ completed: complete ? false : true }),
+      body: JSON.stringify({
+        id: id,
+        title: title,
+        description: description,
+        completed: complete ? false : true,
+      }),
     });
     if (!response.ok) {
-      console.log("Todo submit error: ", response.statusText);
+      console.log("Todo completion error: ", response.statusText);
     } else {
       await getTodos();
     }
   }
   async function HandleDeletion(id: number) {
-    const response = await fetch(`${api}core/todos/${id}`, {
+    const response = await fetch("/api/todo/", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       credentials: "include",
+      body: JSON.stringify({ id: id }),
     });
     if (!response.ok) {
       console.log("Todo deletion error: ", response.statusText);
@@ -129,7 +132,14 @@ export default function TodosList({ token, api }: TodosListProps) {
                   </div>
                   <div className="mt-4">
                     <span
-                      onClick={() => handleCompletion(todo.id, todo.completed)}
+                      onClick={() =>
+                        handleCompletion(
+                          todo.id,
+                          todo.title,
+                          todo.description,
+                          todo.completed
+                        )
+                      }
                       className={`inline-block px-4 py-1 text-sm font-medium rounded-full cursor-pointer ${
                         todo.completed
                           ? "bg-green-200 text-green-800"

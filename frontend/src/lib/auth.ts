@@ -129,3 +129,38 @@ export const backendLogin = async (username: string, password: string) => {
     console.error("An error occurred while logging in:", error);
   }
 };
+
+export const backendRegister = async (username: string, password: string) => {
+  "use server";
+  if (!username || !password) {
+    console.error("Username and password are required.");
+    return false;
+  }
+
+  try {
+    const apiUrl = process.env.DJANGO_PUBLIC_API_URL;
+
+    if (!apiUrl) {
+      console.error("API URL is not defined in the environment variables.");
+      return;
+    }
+    const response = await fetch(`${apiUrl}users/register/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to register:", response.statusText);
+      return;
+    }
+
+    const data = await response.json();
+    console.log("Register successful");
+    setToken(data.access, data.refresh);
+  } catch (error) {
+    console.error("An error occurred while logging in:", error);
+  }
+};

@@ -2,6 +2,27 @@ import { getToken } from "./auth";
 
 const api = process.env.DJANGO_PUBLIC_API_URL;
 
+export const getSingleTodo = async (id: number) => {
+  const token = await getToken();
+  if (!token) {
+    return false;
+  }
+  const response = await fetch(`${api}core/todos/${id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    return response.status;
+  }
+  const data = await response.json();
+  console.log(data);
+  return data;
+};
+
 export const getTodos = async (pageNumber: number = 1) => {
   const token = await getToken();
   if (!token) {

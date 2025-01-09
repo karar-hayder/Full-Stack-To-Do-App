@@ -1,28 +1,27 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { setToken } from "@/lib/auth";
-
+"use client";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 export default function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
   async function handleLogin(formData: FormData): Promise<void> {
-    "use server";
-
-    const username = formData.get("username") as string | null;
-    const password = formData.get("password") as string | null;
-
     if (!username || !password) {
       console.error("Username and password are required.");
       return;
     }
 
     try {
-      const apiUrl = process.env.DJANGO_PUBLIC_API_URL;
-
-      if (!apiUrl) {
-        console.error("API URL is not defined in the environment variables.");
-        return;
-      }
-      console.log(`${apiUrl}users/register/`);
-      const response = await fetch(`${apiUrl}users/register/`, {
+      const response = await fetch(`api/auth/register/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,15 +33,11 @@ export default function Login() {
         console.error("Failed to Reister:", response.statusText);
         return;
       }
-
-      const data = await response.json();
       console.log("Register successful");
-
-      setToken(data.access, data.refresh);
+      router.push("/");
     } catch (error) {
       console.error("An error occurred while logging in:", error);
     }
-    redirect("/");
   }
 
   return (
@@ -54,12 +49,14 @@ export default function Login() {
             name="username"
             type="text"
             placeholder="Username"
+            onChange={(e) => setUsername(e.target.value)}
             className="p-2 border border-gray-300 rounded"
           />
           <input
             name="password"
             type="password"
             placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
             className="p-2 border border-gray-300 rounded"
           />
           <button type="submit" className="p-2 bg-blue-500 text-white rounded">

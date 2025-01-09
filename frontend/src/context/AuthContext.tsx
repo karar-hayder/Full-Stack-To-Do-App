@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
-    await fetch("/api/auth/tokens", { method: "POST" }); // Optional: Log out on server side
+    await fetch("/api/auth/tokens", { method: "DELETE" });
     setAccessToken("");
     setRefreshToken("");
     setIsAuthenticated(false);

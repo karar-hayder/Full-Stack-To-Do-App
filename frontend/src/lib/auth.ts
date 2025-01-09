@@ -1,22 +1,19 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-// Function to set the tokens in cookies
 export const setToken = async (accessToken: string, refreshToken: string) => {
-  "use server"; // Make sure this is only in server-side code
+  "use server";
   const cookiesStorage = await cookies();
 
   if (!cookiesStorage) {
     return;
   }
 
-  // Set access token (expires in 30 minutes)
   cookiesStorage.set("access-token", accessToken, {
     httpOnly: true,
     expires: new Date(Date.now() + 1000 * 60 * 30), // 30 minutes expiration
   });
 
-  // Set refresh token (expires in 1 day)
   cookiesStorage.set("refresh-token", refreshToken, {
     httpOnly: true,
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1), // 1 day expiration
@@ -26,11 +23,12 @@ export const setToken = async (accessToken: string, refreshToken: string) => {
 };
 
 // Function to remove the tokens from cookies
-export const removeToken = () => {
-  const response = NextResponse.next();
-  response.cookies.delete("access-token");
-  response.cookies.delete("refresh-token");
-  return response;
+export const removeToken = async () => {
+  "use server";
+  const cookiesStorage = await cookies();
+  cookiesStorage.delete("access-token");
+  cookiesStorage.delete("refresh-token");
+  return true;
 };
 
 // Function to refresh the access token using the refresh token

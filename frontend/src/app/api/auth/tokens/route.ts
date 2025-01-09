@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { refreshAccessToken, getToken } from "@/lib/auth";
+import { refreshAccessToken, getToken, removeToken } from "@/lib/auth";
 
 // GET request to fetch current tokens
 export async function GET() {
@@ -53,5 +53,14 @@ export async function POST(req: Request) {
       { message: "Error refreshing token" },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE() {
+  console.log("Got api");
+  if (await removeToken()) {
+    return NextResponse.json({ message: "Done Logout" }, { status: 200 });
+  } else {
+    return NextResponse.json({ message: "Failed to logout" }, { status: 404 });
   }
 }

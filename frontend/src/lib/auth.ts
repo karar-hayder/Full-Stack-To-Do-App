@@ -42,7 +42,7 @@ export const refreshAccessToken = async (
   const apiUrl = process.env.DJANGO_PUBLIC_API_URL || ""; // URL for your backend
 
   try {
-    const response = await fetch(`${apiUrl}/users/refresh/`, {
+    const response = await fetch(`${apiUrl}users/refresh/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

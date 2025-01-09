@@ -1,4 +1,4 @@
-import { editTodo, getTodos, deleteTodo } from "@/lib/todos";
+import { editTodo, getTodos, deleteTodo, createTodo } from "@/lib/todos";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,6 +11,22 @@ export async function GET(req: NextRequest) {
     );
   }
   return NextResponse.json(data);
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const { title, description } = body;
+  if (!title || !description) {
+    return NextResponse.json(
+      { error: "Title and description are required" },
+      { status: 404 }
+    );
+  }
+  const response = await createTodo(title, description);
+  if (!response) {
+    return NextResponse.json({ message: "Unautherized" }, { status: 401 });
+  }
+  return NextResponse.json({ message: "Done" }, { status: 200 });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -46,10 +62,5 @@ export async function DELETE(req: NextRequest) {
   if (!response) {
     return NextResponse.json({ message: "Unautherized" }, { status: 401 });
   }
-  console.log(response.status);
-  console.log(response);
-  return NextResponse.json(
-    { message: response.statusText },
-    { status: response.status }
-  );
+  return NextResponse.json({ message: "Done" }, { status: 200 });
 }

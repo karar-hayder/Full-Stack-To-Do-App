@@ -1,12 +1,14 @@
 "use client";
+import { editTodo } from "@/lib/todos";
 import { Todo, TodoEditProps } from "@/types/todo";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function TodoEdit({ token, api, todo }: TodoEditProps) {
-  const [todoTitle, setTodoTitle] = useState(todo.title);
-  const [todoDescription, setTodoDescription] = useState(todo.description);
-  const [todoCompleted, setTodoCompleted] = useState(todo.completed);
+export default function TodoEdit({ todo_id }: { todo_id: number }) {
+  const [todoTitle, setTodoTitle] = useState("");
+  const [todoDescription, setTodoDescription] = useState("");
+  const [todoCompleted, setTodoCompleted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
   async function updateTodo(
@@ -14,14 +16,14 @@ export default function TodoEdit({ token, api, todo }: TodoEditProps) {
   ): Promise<void> {
     e.preventDefault();
     try {
-      const response = await fetch(`${api}core/todos/${todo.id}/`, {
+      console.log(todoCompleted);
+      const response = await fetch("/api/todo/", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
         body: JSON.stringify({
+          id: todo_id,
           title: todoTitle,
           description: todoDescription,
           completed: todoCompleted,
@@ -37,6 +39,32 @@ export default function TodoEdit({ token, api, todo }: TodoEditProps) {
       console.log("Error updating todo:", error);
     }
   }
+
+  async function getTodo() {
+    const response = await fetch(`/api/todo/${todo_id}`, {
+      method: "GET",
+      headers: {},
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      if (response.status == 401) {
+        router.push("/login");
+        return;
+      }
+      setError("An error occurred while fetching todos.");
+      setError(`Failed to fetch todos: ${response.statusText}`);
+      return;
+    }
+    const data = await response.json();
+    setTodoTitle(data.title);
+    setTodoDescription(data.description);
+    setTodoCompleted(data.completed);
+    setError(null);
+  }
+  useEffect(() => {
+    getTodo();
+  }, []);
   return (
     <div className="flex flex-col justify-center items-center z-10 p-6 bg-white rounded-lg shadow-lg w-full max-w-md mx-auto mt-40">
       <h1 className="text-2xl font-semibold mb-6">Edit Todo</h1>

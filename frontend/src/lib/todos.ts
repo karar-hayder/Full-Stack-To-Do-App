@@ -59,26 +59,22 @@ export const deleteTodo = async (id: number) => {
   const response = await fetch(`${api}core/todos/${id}`, {
     method: "DELETE",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token.accessToken}`,
     },
     credentials: "include",
   });
   return response;
 };
 
-export const createTodo = async (
-  title: string,
-  description: string,
-  complete: boolean
-) => {
+export const createTodo = async (title: string, description: string) => {
   const token = await getToken();
   if (!token) {
     return false;
   }
   const response = await fetch(`${api}core/todos/`, {
-    method: "PUT",
+    method: "POST",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token.accessToken}`,
     },
     credentials: "include",
@@ -86,10 +82,9 @@ export const createTodo = async (
     body: JSON.stringify({
       title: title,
       description: description,
-      completed: complete,
     }),
   });
-  if (!response.ok) {
+  if (!(response.status == 201)) {
     return response.status;
   } else {
     return true;

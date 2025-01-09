@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Todo, TodosListProps } from "@/types/todo";
-import TodoEdit from "@/components/todoedit";
+import { Todo } from "@/types/todo";
 
-export default function TodosList({ token, api }: TodosListProps) {
+export default function TodosList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,9 +19,7 @@ export default function TodosList({ token, api }: TodosListProps) {
     try {
       const response = await fetch(`/api/todo/?page=${pageNumber}`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
         credentials: "include",
         cache: "no-store",
       });
@@ -81,7 +78,6 @@ export default function TodosList({ token, api }: TodosListProps) {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
       body: JSON.stringify({ id: id }),

@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import {
-  setToken,
-  removeToken,
-  refreshAccessToken,
-  getToken,
-} from "@/lib/auth";
+import { refreshAccessToken, getToken } from "@/lib/auth";
 
 // GET request to fetch current tokens
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const tokenData = await getToken(); // Call the getToken function to fetch token data
 

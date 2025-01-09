@@ -1,21 +1,27 @@
 import { getSingleTodo } from "@/lib/todos";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const todoid = parseInt(params.id, 10); // Convert the string to a number if needed.
+  const id = (await params).id;
+  const todoid = parseInt(id, 10);
   console.log(todoid);
 
-  const data = await getSingleTodo(todoid);
+  try {
+    const data = await getSingleTodo(todoid);
 
-  if (!data || typeof data === "number") {
+    if (!data) {
+      return NextResponse.json({ message: "Todo not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error fetching todo:", error);
     return NextResponse.json(
-      { message: "Error fetching todos" },
-      { status: typeof data === "number" ? data : 404 }
+      { message: "Error fetching todo" },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json(data);
 }

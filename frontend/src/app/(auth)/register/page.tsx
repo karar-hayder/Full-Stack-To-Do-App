@@ -14,7 +14,7 @@ export default function Login() {
     }
   }, [isAuthenticated, router]);
 
-  async function handleLogin(formData: FormData): Promise<void> {
+  async function handleLogin(): Promise<void> {
     if (!username || !password) {
       console.error("Username and password are required.");
       return;

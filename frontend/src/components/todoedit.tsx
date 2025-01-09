@@ -1,6 +1,4 @@
 "use client";
-import { editTodo } from "@/lib/todos";
-import { Todo, TodoEditProps } from "@/types/todo";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -64,7 +62,7 @@ export default function TodoEdit({ todo_id }: { todo_id: number }) {
   }
   useEffect(() => {
     getTodo();
-  }, []);
+  }, [todo_id]);
   return (
     <div className="flex flex-col justify-center items-center z-10 p-6 bg-white rounded-lg shadow-lg w-full max-w-md mx-auto mt-40">
       <h1 className="text-2xl font-semibold mb-6">Edit Todo</h1>
@@ -117,6 +115,7 @@ export default function TodoEdit({ todo_id }: { todo_id: number }) {
           Submit
         </button>
       </form>
+      {error && <div className="text-red-500 mt-2 p-4">{error}</div>}
     </div>
   );
 }

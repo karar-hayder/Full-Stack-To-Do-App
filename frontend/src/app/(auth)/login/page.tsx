@@ -1,53 +1,43 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { setToken } from "@/lib/auth";
+"use client";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
-  async function handleLogin(formData: FormData): Promise<void> {
-    "use server";
+  const { login } = useAuth();
+  const router = useRouter();
 
+  async function handleLogin(formData: FormData): Promise<void> {
     const username = formData.get("username") as string | null;
     const password = formData.get("password") as string | null;
 
-    if (!username || !password) {
-      console.error("Username and password are required.");
-      return;
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    console.log(response);
+    if (response.ok) {
+      const tokens = await response.json();
+      login(tokens.access, tokens.refresh);
+      router.push("/");
+    } else {
+      alert("Login failed");
     }
-
-    try {
-      const apiUrl = process.env.DJANGO_PUBLIC_API_URL;
-
-      if (!apiUrl) {
-        console.error("API URL is not defined in the environment variables.");
-        return;
-      }
-
-      const response = await fetch(`${apiUrl}users/login/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        console.error("Failed to login:", response.statusText);
-        return;
-      }
-
-      const data = await response.json();
-      console.log("Login successful");
-      setToken(data.access, data.refresh);
-    } catch (error) {
-      console.error("An error occurred while logging in:", error);
-    }
-    redirect("/");
   }
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <form action={handleLogin} className="flex flex-col gap-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target as HTMLFormElement);
+            handleLogin(formData);
+          }}
+          className="flex flex-col gap-4"
+        >
           <h1 className="text-4xl font-bold">Login</h1>
           <input
             name="username"

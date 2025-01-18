@@ -38,7 +38,7 @@ This is a full-stack To-Do application built with a modern tech stack. The appli
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/todo-app.git
+    git clone https://github.com/karar-hayder/Full-Stack-To-Do-App.git
     cd todo-app
     ```
 

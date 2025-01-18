@@ -61,11 +61,8 @@ This is a full-stack To-Do application built with a modern tech stack. The appli
     ```plaintext
     SECRET_KEY=your_secret_key
     DEBUG=True
-    DB_NAME=your_db_name
-    DB_USER=your_db_user
-    DB_PASSWORD=your_db_password
-    DB_HOST=your_db_host
-    DB_PORT=your_db_port
+    DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+    DJANGO_CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
     ```
 
 5. Create .env file in the frontend directory and add the following environment variables:
